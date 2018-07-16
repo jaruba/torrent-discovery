@@ -114,8 +114,8 @@ Discovery.prototype.setTorrent = function () {
   
 }
 
-Discovery.prototype.seedCheck = function () {
-  this.complete();
+Discovery.prototype.seedCheck = function (oldOpts) {
+  this.complete(oldOpts);
   var changed = false
   if (this.seedDelay == 180000 && this.whenSeeder < Date.now() - 600000) {
     // 10 min passed => 5 min interval
@@ -148,7 +148,7 @@ Discovery.prototype.complete = function (opts) {
       if (!this.niceSeeder) {
         this.whenSeeder = Date.now();
         this.seedDelay = 180000; // start at a 3 min interval
-        this.niceSeeder = setInterval(this.seedCheck, this.seedDelay);
+        this.niceSeeder = setInterval(this.seedCheck.bind(this, opts), this.seedDelay);
       }
       this.tracker.complete(opts)
     }
@@ -156,8 +156,10 @@ Discovery.prototype.complete = function (opts) {
 }
 
 Discovery.prototype.update = function (opts) {
-  if (this.tracker)
-    this.tracker.update(opts);
+  if (!this.amSeeder) {
+    if (this.tracker)
+      this.tracker.update(opts);
+  }
 }
 
 Discovery.prototype.destroy = function (cb) {
