@@ -136,7 +136,7 @@ Discovery.prototype.seedCheck = function (oldOpts) {
   }
   if (changed) {
     clearInterval(this.niceSeeder);
-    this.niceSeeder = setInterval(this.seedCheck, this.seedDelay);
+    this.niceSeeder = setInterval(this.seedCheck.bind(this, oldOpts), this.seedDelay);
   }
 };
 
